@@ -1,0 +1,63 @@
+name: CI/CD with Reviewers
+
+on:
+  pull_request:
+    types: [opened]
+  push:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+jobs:
+
+  # --- Build Job ---
+  build:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Build with dotnet
+        run: dotnet build --configuration Release
+      - name: dotnet publish
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: .net-app
+          path: ${{env.DOTNET_ROOT}}/myapp
+
+  # --- Test Job ---
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Run unit tests
+        run: dotnet test --configuration Release
+
+ 
+
+  # --- Deploy Production ---
+  deploy-production:
+    runs-on: ubuntu-latest
+    needs: test
+    environment: production   # 👈 reviewer trigger
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: .net-app
+
+      - name: Deploy to Azure Web App (Production)
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: FuncAppWithCICD
+          publish-profile: ${{secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE}}
+          package: '.'
