@@ -18,7 +18,6 @@
 
 # Docs for the Azure Web Apps Deploy action: https://github.com/azure/functions-action
 # More GitHub Actions for Azure: https://github.com/Azure/actions
-
 name: CI/CD with Four Environments
 
 on:
@@ -27,85 +26,98 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.'   # Path to your Function App project
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.'
   DOTNET_VERSION: '8.0.x'
 
 jobs:
 
-  # --- Build Job ---
+# ---------------- BUILD ----------------
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
-      - name: Setup .NET Core
+
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-      - name: Build with dotnet
+
+      - name: Build
         run: dotnet build --configuration Release
-      - name: dotnet publish
+
+      - name: Publish
         run: dotnet publish -c Release -o ./output
-      - name: Upload artifact
+
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: functionapp
           path: ./output
 
-  # --- Test Job ---
+
+# ---------------- TEST ----------------
   test:
     runs-on: ubuntu-latest
     needs: build
+
     steps:
       - uses: actions/checkout@v4
-      - name: Setup .NET Core
+
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-      - name: Run unit tests
+
+      - name: Run Tests
         run: dotnet test --configuration Release
 
-  # --- Deploy Staging ---
+
+# ---------------- STAGING ----------------
   deploy-staging:
     runs-on: ubuntu-latest
     needs: test
     environment: staging
+
     steps:
-      - name: Download artifact
+      - name: Download Artifact
         uses: actions/download-artifact@v4
         with:
           name: functionapp
+          path: ./functionapp
+
       - name: Azure Login
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-      - name: Deploy to Azure Function App (Staging)
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to Staging
         uses: Azure/functions-action@v1
         with:
           app-name: 'FunctionAppForTestingCICD'
           slot-name: 'staging'
           package: './functionapp'
 
-  # --- Deploy Production ---
+
+# ---------------- PRODUCTION ----------------
   deploy-production:
     runs-on: ubuntu-latest
     needs: deploy-staging
-    environment: production   # 👈 Reviewer gate here
+    environment: production
+
     steps:
-      - name: Download artifact
+      - name: Download Artifact
         uses: actions/download-artifact@v4
         with:
           name: functionapp
+          path: ./functionapp
+
       - name: Azure Login
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-      - name: Deploy to Azure Function App (Production)
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to Production
         uses: Azure/functions-action@v1
         with:
           app-name: 'FunctionAppForTestingCICD'
