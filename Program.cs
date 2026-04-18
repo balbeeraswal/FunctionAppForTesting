@@ -19,5 +19,4 @@ builder.Services.AddSingleton<ServiceBusClient>(sp =>
     var conn = config["ServiceBusConnectionString"]; // must exist in local.settings.json
     return new ServiceBusClient(conn);
 });
-
 builder.Build().Run();
