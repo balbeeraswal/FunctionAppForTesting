@@ -42,26 +42,12 @@ jobs:
       - name: Run unit tests
         run: dotnet test --configuration Release
 
-  # --- Deploy Staging ---
-  deploy-staging:
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: .net-app
-      - name: Deploy to Azure Web App (Staging)
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: FunctionAppTesting
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: '.'
+ 
 
   # --- Deploy Production ---
   deploy-production:
     runs-on: ubuntu-latest
-    needs: deploy-staging
+    needs: test
     environment: production   # 👈 reviewer trigger
     steps:
       - name: Download artifact
