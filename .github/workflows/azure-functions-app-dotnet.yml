@@ -14,7 +14,7 @@ env:
 jobs:
   build-and-deploy:
     runs-on: windows-latest # For Linux, use ubuntu-latest
-    environment: build
+    environment: Build
     steps:
     - name: 'Checkout GitHub Action'
       uses: actions/checkout@v4
