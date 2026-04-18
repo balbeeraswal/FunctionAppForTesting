@@ -58,6 +58,6 @@ jobs:
       - name: Deploy to Azure Web App (Production)
         uses: azure/webapps-deploy@v2
         with:
-          app-name: FunctionAppTesting
+          app-name: FunctionAppTesting-staging
           publish-profile: ${{secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE}}
           package: '.'
