@@ -8,17 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  # --- Reviewer Assignment Job ---
-  add-reviewers:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    steps:
-      - name: Assign Reviewers
-        uses: kentaro-m/add-reviewers@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          reviewers: Balbeer-Team Lead
-          re-request-when-changes-requested: true
+
 
   # --- Build Job ---
   build:
