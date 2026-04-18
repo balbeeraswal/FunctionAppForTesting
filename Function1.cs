@@ -15,7 +15,7 @@ public class ServiceBusTrigger
         _logger = logger;
     }
 
-    // This function will be triggered when a message is received on the specified Service Bus queue.
+    //Function updated by balbeer on 18_04_at07_41PM This function will be triggered when a message is received on the specified Service Bus queue.
     [Function(nameof(ServiceBusTrigger))]
     public async Task Run(
         [ServiceBusTrigger("myqueue", Connection = "ServiceBusConnectionString")]
