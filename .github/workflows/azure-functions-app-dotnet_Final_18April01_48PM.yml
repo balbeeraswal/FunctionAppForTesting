@@ -57,8 +57,9 @@ jobs:
         with:
           name: functionapp
           path: ./output
-
-
+          include-hidden-files: true   # 👈 ensures .azurefunctions is included
+          
+     
 # ---------------- TEST ----------------
   test:
     runs-on: ubuntu-latest
