@@ -42,12 +42,15 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-
+          
+      - name: Install Azure Functions Core Tools
+        run: npm install -g azure-functions-core-tools@4 --unsafe-perm true
+      
       - name: Build
         run: dotnet build --configuration Release
 
       - name: Publish
-        run: dotnet publish -c Release -o ./output
+        run: dotnet publish ./FunctionAppForTestingCICD/FunctionAppForTestingCICD.csproj -c Release -o ./output
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
