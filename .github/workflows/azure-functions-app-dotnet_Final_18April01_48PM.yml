@@ -50,7 +50,7 @@ jobs:
         run: dotnet build --configuration Release
 
       - name: Publish
-        run: dotnet publish FunctionAppForTestingCICD.csproj -c Release -o ./output
+        run: dotnet publish FunctionAppForTesting.csproj -c Release -o ./output
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
