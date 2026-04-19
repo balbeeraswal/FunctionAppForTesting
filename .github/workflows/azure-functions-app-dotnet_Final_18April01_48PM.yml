@@ -94,6 +94,10 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: List artifact contents
+        run: ls -R ./output
+
+
       - name: Deploy to Staging
         uses: Azure/functions-action@v1
         with:
